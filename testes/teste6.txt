@@ -1,0 +1,40 @@
+int GLOBAL_TESTE;
+float OUTRO_TESTE;
+
+// ERRO LÉXICO: O nome da função não obedece à regra de verbo + termo (ex: testarAlgoritmo)
+int test(int parametro) {
+    int VariavelLocal; // ERRO LÉXICO: Variável local possui letras maiúsculas
+    
+    VariavelLocal = parametro * 2;
+    return VariavelLocal;
+}
+
+int calcularTotal(int valor) {
+    int total;
+    total = valor * 2
+    // ERRO SINTÁTICO: A linha acima não terminou com ';'
+    return total;
+}
+
+int principal() {
+    int indice;
+    int limite;
+    
+    GLOBAL_TESTE = 0;
+    OUTRO_TESTE = 1.5;
+    indice = 0;
+    limite = 20;
+
+    while (indice < limite) {
+        if (indice == 10) {
+            indice = indice + #; // ERRO LÉXICO: Caractere inválido '#'
+        } else {
+            indice = indice + 1;
+        }
+    }
+
+    if (indice == limite) {
+        GLOBAL_TESTE = calcularTotal(indice);
+    }
+    
+// ERRO SINTÁTICO: O bloco da função principal '}' nunca foi fechado

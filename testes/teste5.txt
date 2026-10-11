@@ -1,0 +1,13 @@
+int principal() {
+    int a;
+    int b;
+    
+    a = 10 // ERRO SINTÁTICO: falta o ponto e vírgula no final da atribuição
+    b = 20;
+    
+    if a > b { // ERRO SINTÁTICO: falta de parênteses '(' e ')' na condição do if
+        a = b;
+    }
+    
+    return;
+}

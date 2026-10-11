@@ -1,0 +1,26 @@
+int SOMA_TOTAL;
+
+int processarDados(int limite) {
+    int i;
+    i = 0;
+    while (i < limite) {
+        if (i == 5) {
+            SOMA_TOTAL = SOMA_TOTAL + 10;
+        } else {
+            SOMA_TOTAL = SOMA_TOTAL + 1;
+        }
+        i = i + 1;
+    }
+    return SOMA_TOTAL;
+}
+
+int principal() {
+    int limite;
+    int resultado;
+    
+    SOMA_TOTAL = 0;
+    limite = 10;
+    
+    resultado = processarDados(limite);
+    return 0;
+}

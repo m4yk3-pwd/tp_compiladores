@@ -1,0 +1,8 @@
+int principal() {
+    int x;
+    int 2numero; // ERRO LÉXICO: número mal formado ou identificador inválido a começar por número
+    
+    x = 10 @ 5;  // ERRO LÉXICO: caractere inválido '@'
+    
+    return 0;
+}
