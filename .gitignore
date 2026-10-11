@@ -1,0 +1,14 @@
+# Executáveis
+compilador
+compilador.exe
+lexer_test
+lexer_test.exe
+
+# Arquivos gerados automaticamente pelo Flex e Bison
+lex.yy.c
+win_flex.yy.c
+parser.tab.c
+parser.tab.h
+
+# Objetos compilados (caso venha a utilizar no futuro)
+*.o

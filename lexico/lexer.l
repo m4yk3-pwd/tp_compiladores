@@ -4,14 +4,10 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef LEXER_STANDALONE
-#include "tokens.h"
-#else
 #include "parser.tab.h"
-#endif
 
 int lex_errors = 0;                 /* total de erros lexicos           */
-static int line = 1, col = 1;       /* posicao do PROXIMO caractere      */
+int line = 1, col = 1;       /* posicao do PROXIMO caractere      */
 static int token_line, token_col;       /* posicao de INICIO do token atual  */
 static int cmt_line, cmt_col;       /* onde o comentario de bloco abriu  */
 
@@ -116,13 +112,13 @@ static const char *token_name(int t) {
     return (t >= 258) ? n[t - 258] : "CHAR";
 }
 
-int main(int argc, char **argv) {
-    if (argc > 1 && !(yyin = fopen(argv[1], "r"))) { perror(argv[1]); return 1; }
-    int t;
-    while ((t = yylex())) {
-        printf("%3d:%-3d %-10s '%s'\n", token_line, token_col, token_name(t), yytext);
-    }
-    printf("\nAnalise lexica concluida. %d erro(s) lexico(s).\n", lex_errors);
-    return lex_errors ? 1 : 0;
-}
+// int main(int argc, char **argv) {
+//     if (argc > 1 && !(yyin = fopen(argv[1], "r"))) { perror(argv[1]); return 1; }
+//     int t;
+//     while ((t = yylex())) {
+//         printf("%3d:%-3d %-10s '%s'\n", token_line, token_col, token_name(t), yytext);
+//     }
+//     printf("\nAnalise lexica concluida. %d erro(s) lexico(s).\n", lex_errors);
+//     return lex_errors ? 1 : 0;
+// }
 #endif
