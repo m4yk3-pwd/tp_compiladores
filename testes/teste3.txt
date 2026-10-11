@@ -1,0 +1,60 @@
+float MULTIPLICADOR;
+int RESULTADO_FINAL;
+
+int inicializarValores() {
+    MULTIPLICADOR = 2.5;
+    RESULTADO_FINAL = 0;
+    return 1;
+}
+
+int calcularFatorial(int n) {
+    int fat;
+    int i;
+    fat = 1;
+    i = 1;
+    while (i <= n) {
+        fat = fat * i;
+        i = i + 1;
+    }
+    return fat;
+}
+
+float calcularJuros(float capital, int meses) {
+    float montante;
+    montante = capital;
+    while (meses > 0) {
+        montante = montante + (montante * 0.05);
+        meses = meses - 1;
+    }
+    return montante;
+}
+
+int principal() {
+    int n;
+    int fat;
+    float juros;
+    float capital;
+
+    inicializarValores();
+    
+    n = 5;
+    fat = calcularFatorial(n);
+
+    /* Verifica se o fatorial calculado
+       ultrapassou a marca estabelecida */
+    if (fat > 100) {
+        RESULTADO_FINAL = 1;
+    } else {
+        RESULTADO_FINAL = 0;
+    }
+
+    capital = 1000.0;
+    juros = calcularJuros(capital, 12);
+    
+    if (juros >= 1500.0 && RESULTADO_FINAL == 1) {
+        // Redefinir valores
+        n = 0;
+    }
+
+    return 0;
+}

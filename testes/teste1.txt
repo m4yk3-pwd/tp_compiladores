@@ -1,0 +1,11 @@
+int principal() {
+    int a;
+    int b;
+    int soma;
+    
+    a = 15;
+    b = 25;
+    soma = a + b;
+    
+    return soma;
+}
