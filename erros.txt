@@ -1,0 +1,7 @@
+int Soma;
+int x = 3@;
+int 9abc;
+x = calcSoma(1);
+y = a & b;
+s = "abc
+/* nunca fecha

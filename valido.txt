@@ -1,0 +1,17 @@
+int SOMA;
+
+int calcularSoma(int a, int b) {
+    int resultado;
+    resultado = a + b;   // soma
+    return resultado;
+}
+
+int principal() {
+    int x; int y;
+    x = 10; y = 20;
+    SOMA = calcularSoma(x, y);
+    /* bloco
+       multilinha */
+    if (SOMA >= 20 && x != 3) { x = x + 1; } else { x = 2.5; }
+    while (x < SOMA) { x = x + 1; }
+}
