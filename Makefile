@@ -7,10 +7,10 @@ clean:
 
 compileLinux:
 	bison -d sintatico/parser.y -o parser.tab.c
-	flex -o lex.yy.c lex/lexer.l
+	flex -o lex.yy.c lexico/lexer.l
 	gcc parser.tab.c lex.yy.c -o compilador -Wall
 
 compileWin:
 	bison -d sintatico/parser.y -o parser.tab.c
-	flex -o win_flex.yy.c lex/lexer.l
+	flex -o win_flex.yy.c lexico/lexer.l
 	gcc parser.tab.c win_flex.yy.c -o compilador.exe -Wall
