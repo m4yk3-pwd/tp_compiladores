@@ -8,8 +8,13 @@ extern FILE *yyin;
 extern int lex_errors;
 
 void yyerror(const char *s);
+void erro_em(int l, int c, const char *msg);
 int syn_errors = 0;
+int syn_suprimido = 0;      /* 1 se o ULTIMO erro sintatico foi ocultado por ser cascata de erro lexico */
 %}
+
+%locations
+%define parse.error verbose
 
 %union {
     int ival;
@@ -18,7 +23,7 @@ int syn_errors = 0;
 }
 
 /* Tokens definidos no Flex */
-%token INT FLOAT VOID IF ELSE WHILE RETURN PRINCIPAL
+%token INT FLOAT VOID IF ELSE WHILE RETURN MAIN
 %token <sval> FUNC_ID GLOBAL_ID LOCAL_ID STRING_LIT
 %token <ival> INT_LIT
 %token <fval> FLOAT_LIT
@@ -64,7 +69,10 @@ tipo:
 
 funcao_decl:
     tipo FUNC_ID '(' parametros ')' bloco
-    | tipo PRINCIPAL '(' ')' bloco
+    | tipo MAIN '(' ')' bloco
+    | tipo LOCAL_ID '(' parametros ')' bloco
+        { erro_em(@2.first_line, @2.first_column,
+                  "nome de funcao invalido: use verbo + Termo (ex.: calcularSoma)"); }
     ;
 
 parametros:
@@ -98,6 +106,7 @@ comando:
     | retorno ';'
     | chamada_funcao ';'
     | bloco
+    | error ';'     /* recuperacao: descarta ate o proximo ';' e continua */
     ;
 
 var_local_decl:
@@ -162,11 +171,20 @@ expressao:
 
 %%
 
-void yyerror(const char *s) {
-    extern int line, col; 
-    /* Agora as variáveis são usadas no fprintf abaixo: */
-    fprintf(stderr, "Erro sintatico (linha %d, coluna %d): %s\n", line, col, s);
+void erro_em(int l, int c, const char *msg) {
+    fprintf(stderr, "Erro sintatico (linha %d, coluna %d): %s\n", l, c, msg);
     syn_errors++;
+    syn_suprimido = 0;
+}
+
+void yyerror(const char *s) {
+    extern int token_line, token_col, last_lex_error_line;
+    /* erro na MESMA linha de um erro lexico: quase certamente e cascata (token descartado) */
+    if (token_line == last_lex_error_line) {
+        syn_suprimido = 1;
+        return;
+    }
+    erro_em(token_line, token_col, s);
 }
 
 int main(int argc, char **argv) {
@@ -177,7 +195,12 @@ int main(int argc, char **argv) {
         }
     }
 
-    yyparse();
+    int rc = yyparse();
+    int restante = 0;   /* tokens que sobraram quando o parser abortou */
+    if (rc != 0) {
+        /* o parser abortou (erro sem recuperacao): varre o resto so para achar erros lexicos */
+        while (yylex() != 0) restante++;
+    }
 
     if (lex_errors == 0 && syn_errors == 0) {
         printf("Analise lexica concluida.\n");
@@ -185,6 +208,8 @@ int main(int argc, char **argv) {
         printf("Programa reconhecido com sucesso.\n");
     } else {
         printf("\nForam encontrados %d erro(s) lexico(s) e %d erro(s) sintatico(s).\n", lex_errors, syn_errors);
+        if (rc != 0 && syn_suprimido && restante > 0)
+            printf("Analise sintatica interrompida por erro lexico: corrija os erros lexicos e execute de novo para verificar o resto do programa.\n");
     }
 
     return (lex_errors || syn_errors) ? 1 : 0;

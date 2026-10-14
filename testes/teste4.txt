@@ -1,4 +1,4 @@
-int principal() {
+int main() {
     int x;
     int 2numero; // ERRO LÉXICO: número mal formado ou identificador inválido a começar por número
     

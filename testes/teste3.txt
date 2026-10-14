@@ -29,7 +29,7 @@ float calcularJuros(float capital, int meses) {
     return montante;
 }
 
-int principal() {
+int main() {
     int n;
     int fat;
     float juros;

@@ -7,12 +7,16 @@
 #include "parser.tab.h"
 
 int lex_errors = 0;                 /* total de erros lexicos           */
-int line = 1, col = 1;       /* posicao do PROXIMO caractere      */
-static int token_line, token_col;       /* posicao de INICIO do token atual  */
+int last_lex_error_line = 0;        /* linha do ultimo erro lexico (evita erro sintatico em cascata) */
+int line = 1, col = 1;              /* posicao do PROXIMO caractere      */
+int token_line, token_col;          /* posicao de INICIO do token atual  */
 static int cmt_line, cmt_col;       /* onde o comentario de bloco abriu  */
 
-/* Roda antes de TODA acao: guarda onde o token comecou e avanca a coluna */
-#define YY_USER_ACTION { token_line = line; token_col = col; col += yyleng; }
+/* Roda antes de TODA acao: guarda onde o token comecou (para o Bison tambem: yylloc) e avanca a coluna */
+#define YY_USER_ACTION { token_line = line; token_col = col; \
+                         yylloc.first_line = line;  yylloc.first_column = col; \
+                         yylloc.last_line  = line;  yylloc.last_column  = col + yyleng; \
+                         col += yyleng; }
 
 static void lex_error_at(int l, int c, const char *msg);
 static void lex_error(const char *fmt, ...);
@@ -22,8 +26,9 @@ static void lex_error(const char *fmt, ...);
 
 DIGIT     [0-9]
 
-/* ID está permitindo começar com o caractere '_', ou seja, uma variavel '_teste' é permitida*/
-ID     [A-Za-z_][A-Za-z0-9_]* 
+/* ID aceita comecar com '_' (ex.: _teste), mas so e usado para REJEITAR: as regras
+   GLOBAL, LOCAL e FUNC abaixo e que aceitam identificadores validos. */
+ID        [A-Za-z_][A-Za-z0-9_]*
 GLOBAL    [A-Z][A-Z0-9_]*
 LOCAL     [a-z][a-z0-9_]*
 FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
@@ -42,7 +47,7 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 <COMMENT>[^*\n]+         { }
 <COMMENT>"*"             { }
 <COMMENT><<EOF>>         { lex_error_at(cmt_line, cmt_col,
-                               "comentario '/*' nao fechado"); 
+                               "comentario '/*' nao fechado");
                            BEGIN(INITIAL); yyterminate(); }
 
 "int"                    { return INT; }
@@ -52,12 +57,12 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 "else"                   { return ELSE; }
 "while"                  { return WHILE; }
 "return"                 { return RETURN; }
-"principal"              { return PRINCIPAL; }
+"main"                   { return MAIN; }
 
 {FUNC}                   { yylval.sval = strdup(yytext); return FUNC_ID; }
 {GLOBAL}                 { yylval.sval = strdup(yytext); return GLOBAL_ID; }
 {LOCAL}                  { yylval.sval = strdup(yytext); return LOCAL_ID; }
-{ID}                  { lex_error("identificador '%s' invalido: use MAIUSCULAS "
+{ID}                     { lex_error("identificador '%s' invalido: use MAIUSCULAS "
                                "(global), minusculas (local) ou verboTermo (funcao)",
                                yytext); }
 
@@ -91,6 +96,7 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 static void lex_error_at(int l, int c, const char *msg) {
     fprintf(stderr, "Erro lexico (linha %d, coluna %d): %s\n", l, c, msg);
     lex_errors++;
+    last_lex_error_line = l;
 }
 
 static void lex_error(const char *fmt, ...) {
@@ -101,24 +107,3 @@ static void lex_error(const char *fmt, ...) {
     va_end(ap);
     lex_error_at(token_line, token_col, buf);
 }
-
-#ifdef LEXER_STANDALONE
-YYSTYPE yylval;
-
-static const char *token_name(int t) {
-    static const char *n[] = {"INT","FLOAT","VOID","IF","ELSE","WHILE","RETURN",
-        "PRINCIPAL","GLOBAL_ID","LOCAL_ID","FUNC_ID","INT_LIT","FLOAT_LIT",
-        "STRING_LIT","EQ","NEQ","LE","GE","AND","OR"};
-    return (t >= 258) ? n[t - 258] : "CHAR";
-}
-
-// int main(int argc, char **argv) {
-//     if (argc > 1 && !(yyin = fopen(argv[1], "r"))) { perror(argv[1]); return 1; }
-//     int t;
-//     while ((t = yylex())) {
-//         printf("%3d:%-3d %-10s '%s'\n", token_line, token_col, token_name(t), yytext);
-//     }
-//     printf("\nAnalise lexica concluida. %d erro(s) lexico(s).\n", lex_errors);
-//     return lex_errors ? 1 : 0;
-// }
-#endif

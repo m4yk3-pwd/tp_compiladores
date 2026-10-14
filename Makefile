@@ -11,6 +11,6 @@ compileLinux:
 	gcc parser.tab.c lex.yy.c -o compilador -Wall
 
 compileWin:
-	bison -d sintatico/parser.y -o parser.tab.c
-	flex -o win_flex.yy.c lexico/lexer.l
+	win_bison -d sintatico/parser.y -o parser.tab.c
+	win_flex -o win_flex.yy.c lexico/lexer.l
 	gcc parser.tab.c win_flex.yy.c -o compilador.exe -Wall

@@ -6,7 +6,7 @@ int calcularSoma(int a, int b) {
     return resultado;
 }
 
-int principal() {
+int main() {
     int x; int y;
     x = 10; y = 20;
     SOMA = calcularSoma(x, y);

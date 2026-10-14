@@ -14,7 +14,7 @@ int processarDados(int limite) {
     return SOMA_TOTAL;
 }
 
-int principal() {
+int main() {
     int limite;
     int resultado;
     
