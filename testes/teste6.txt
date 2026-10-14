@@ -16,7 +16,7 @@ int calcularTotal(int valor) {
     return total;
 }
 
-int principal() {
+int main() {
     int indice;
     int limite;
     
