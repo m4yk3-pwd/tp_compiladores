@@ -56,6 +56,7 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 "if"                     { return IF; }
 "else"                   { return ELSE; }
 "while"                  { return WHILE; }
+"for"                    { return FOR; }
 "return"                 { return RETURN; }
 "main"                   { return MAIN; }
 

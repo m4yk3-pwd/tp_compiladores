@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 extern int yylex();
 extern int yyparse();
@@ -23,7 +24,7 @@ int syn_suprimido = 0;      /* 1 se o ULTIMO erro sintatico foi ocultado por ser
 }
 
 /* Tokens definidos no Flex */
-%token INT FLOAT VOID IF ELSE WHILE RETURN MAIN
+%token INT FLOAT VOID IF ELSE WHILE FOR RETURN MAIN
 %token <sval> FUNC_ID GLOBAL_ID LOCAL_ID STRING_LIT
 %token <ival> INT_LIT
 %token <fval> FLOAT_LIT
@@ -125,6 +126,22 @@ condicional:
 
 repeticao:
     WHILE '(' expressao ')' comando
+    | FOR '(' for_init ';' for_cond ';' for_passo ')' comando
+    ;
+
+for_init:
+    atribuicao
+    | /* vazio */
+    ;
+
+for_cond:
+    expressao
+    | /* vazio */
+    ;
+
+for_passo:
+    atribuicao
+    | /* vazio */
     ;
 
 retorno:
