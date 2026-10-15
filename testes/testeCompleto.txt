@@ -1,0 +1,134 @@
+/* =========================================================
+   PROGRAMA DE TESTE DO ANALISADOR SINTATICO E LEXICO
+   Testa todas as condicoes definidas no Flex e Bison
+   ========================================================= */
+
+int VARIAVEL_GLOBAL;
+float TAXA_ACUMULADA;
+void FLAG_CONTROLE;
+
+int calcularSoma(int a, int b) {
+    int resultado;
+    resultado = a + b;
+    return resultado;
+}
+
+float obterMedia(float valor_a, float valor_b) {
+    float soma;
+    soma = valor_a + valor_b;
+    return soma / 2.0;
+}
+
+void exibirMensagem() {
+    int texto;
+    texto = "Isso e um teste de string reconhecida pelo analisador";
+    return;
+}
+
+int verificarStatus(int valor) {
+    int status;
+    status = 0;
+
+    if (valor == 10) {
+        status = 1;
+    } else {
+        if (valor > 10 && valor <= 20) {
+            status = 2;
+        } else {
+            if (valor != 0 || status == 0) {
+                status = 3;
+            }
+        }
+    }
+    return status;
+}
+
+int processarLacos() {
+    int acumulador;
+    acumulador = 0;
+
+    for (int x = 0; i < 10; i = i + 1) {
+        acumulador = acumulador + i;
+        if (acumulador > 50) {
+            break;
+        }
+    }
+
+    while (acumulador > 0) {
+        acumulador = acumulador - 1;
+        if (acumulador % 2 == 0) {
+            acumulador = acumulador + 0;
+        }
+    }
+    return acumulador;
+}
+
+void analisarOpcao(int escolha) {
+    int log;
+    log = 0;
+
+    switch (escolha) {
+        case 1:
+            log = log + 10;
+            break;
+        case 2:
+            log = log + 20;
+            break;
+        case 3:
+            log = log * 2;
+            break;
+        default:
+            log = 0;
+            break;
+    }
+    return;
+}
+
+int main() {
+    // Declaracao de Variaveis Locais (LOCAL_ID)
+    int a;
+    int b;
+    int c;
+    float x;
+    float y;
+    int iterador;
+    int opcao_menu;
+
+    VARIAVEL_GLOBAL = 100;
+    TAXA_ACUMULADA = 5.5;
+
+    a = 10;
+    b = 20;
+    x = 1.5;
+    y = 2.5;
+
+    c = calcularSoma(a, b);
+    TAXA_ACUMULADA = obterMedia(x, y);
+
+    exibirMensagem();
+
+    c = (a + b) * 2 / (c - 1) % 5;
+
+    opcao_menu = 2;
+
+    switch (opcao_menu) {
+        case 1:
+            a = calcularSoma(a, 10);
+            break;
+        case 2:
+            a = verificarStatus(a);
+            break;
+        case 3:
+            b = processarLacos();
+            break;
+        default:
+            analisarOpcao(opcao_menu);
+            break;
+    }
+
+    if ((a >= b && a < VARIAVEL_GLOBAL) || (b != 0)) {
+        a = 0;
+    }
+
+    return 0;
+}

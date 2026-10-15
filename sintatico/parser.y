@@ -25,6 +25,7 @@ int syn_suprimido = 0;      /* 1 se o ULTIMO erro sintatico foi ocultado por ser
 
 /* Tokens definidos no Flex */
 %token INT FLOAT VOID IF ELSE WHILE FOR RETURN MAIN
+%token SWITCH CASE DEFAULT BREAK
 %token <sval> FUNC_ID GLOBAL_ID LOCAL_ID STRING_LIT
 %token <ival> INT_LIT
 %token <fval> FLOAT_LIT
@@ -104,6 +105,8 @@ comando:
     | atribuicao ';'
     | condicional
     | repeticao
+    | switch_stmt
+    | BREAK ';'
     | retorno ';'
     | chamada_funcao ';'
     | bloco
@@ -117,6 +120,7 @@ var_local_decl:
 atribuicao:
     LOCAL_ID '=' expressao
     | GLOBAL_ID '=' expressao
+    | tipo LOCAL_ID '=' expressao
     ;
 
 condicional:
@@ -127,6 +131,20 @@ condicional:
 repeticao:
     WHILE '(' expressao ')' comando
     | FOR '(' for_init ';' for_cond ';' for_passo ')' comando
+    ;
+
+switch_stmt:
+    SWITCH '(' expressao ')' '{' cases '}'
+    ;
+
+cases:
+    cases case_stmt
+    | /* vazio */
+    ;
+
+case_stmt:
+    CASE expressao ':' comandos
+    | DEFAULT ':' comandos
     ;
 
 for_init:

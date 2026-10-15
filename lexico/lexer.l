@@ -60,6 +60,11 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 "return"                 { return RETURN; }
 "main"                   { return MAIN; }
 
+"switch"                 { return SWITCH; }
+"case"                   { return CASE; }
+"default"                { return DEFAULT; }
+"break"                  { return BREAK; }
+
 {FUNC}                   { yylval.sval = strdup(yytext); return FUNC_ID; }
 {GLOBAL}                 { yylval.sval = strdup(yytext); return GLOBAL_ID; }
 {LOCAL}                  { yylval.sval = strdup(yytext); return LOCAL_ID; }
@@ -82,7 +87,7 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 "&&"                     { return AND; }
 "||"                     { return OR; }
 
-[-+*/%=<>!(){};,]        { return yytext[0]; }
+[-+*/%=<>!(){};,:]       { return yytext[0]; }
 
 .                        { if (isprint((unsigned char)yytext[0]))
                                lex_error("caractere invalido '%c'", yytext[0]);
