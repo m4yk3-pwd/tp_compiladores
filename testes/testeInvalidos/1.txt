@@ -1,0 +1,17 @@
+// invalido_1.txt - somente erros lexicos
+int CONTADOR;
+
+void imprimirTexto(string t) { return; }
+
+int main() {
+    int valor = 12abc;
+    int Total = 5;
+    int myVar = 1;
+    int y = 99999999999;
+    int x = 5 @ 3;
+    int z = 2 # 1;
+    int café = 1;
+    imprimirTexto("texto sem fim
+    );
+    return 0;
+}

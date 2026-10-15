@@ -1,0 +1,40 @@
+/* ---- valido_4: estresse lexico ---- */
+/* comentario com // dentro, asteriscos ** *** e / solto */
+/* termina com dois asteriscos **/
+// comentario de linha com /* abertura falsa
+int G;
+int G_2_X9;
+int NUM_MAX;
+float ZERO_F;
+string S;
+
+int lerValor9(int entrada) { return entrada; }
+
+int main() {
+    int integer = 2147483647;
+    int iffy = 0;
+    int forma = 1;
+    int elsewhere = 2;
+    int return_value = 3;
+    int main_loop = 4;
+    float float_value = 0.0;
+    float grande = 123456.789000;
+    string string2 = "";
+    string aviso = "// isto nao e comentario /* nem isto */";
+    int breaker; int cases; int defaulted;
+
+    integer=iffy+forma*elsewhere-return_value/main_loop%3;
+    breaker=-integer;
+    cases=!iffy;
+    defaulted=(((1)));
+    G=G_2_X9+NUM_MAX;
+    G_2_X9=lerValor9(7)+lerValor9(lerValor9(1));
+    ZERO_F=0.5;
+    S="x";
+
+    if(iffy<=forma&&forma>=iffy||iffy==forma&&iffy!=elsewhere){iffy=1;}
+    if(iffy<forma){iffy=2;}else{iffy=3;}
+    while(iffy>0)iffy=iffy-1;
+    for(iffy=0;iffy<3;iffy=iffy+1)forma=forma+1;
+	return	0;
+}

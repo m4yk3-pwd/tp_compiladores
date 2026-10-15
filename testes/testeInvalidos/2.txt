@@ -1,0 +1,21 @@
+// invalido_2.txt - erros sintaticos recuperaveis (um por linha)
+int TOTAL;
+
+int somarDois(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    int x = 5
+    int y = 10;
+    x = y + ;
+    x = = 3;
+    if (x > y y = 1;
+    somarDois(1, 2;
+    x = 1;
+    x + 1;
+    x = 2;
+    else x = 3;
+    TOTAL = somarDois(x, y);
+    return 0;
+}

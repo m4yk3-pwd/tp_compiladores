@@ -1,0 +1,10 @@
+// invalido_4.txt - declaracao global invalida e comentario aberto
+int LIMITE;
+int MAXIMO = 100;
+
+int main() {
+    return 0;
+}
+
+/* comentario que nunca e fechado
+void calcularAlgo() { }

@@ -1,0 +1,19 @@
+// invalido_3.txt - nomes de funcao invalidos e erro sem recuperacao
+int CONTADOR;
+
+int soma(int a, int b) {
+    return a + b;
+}
+
+void Imprimir() {
+    return;
+}
+
+float calcularMedia(float x float y) {
+    return (x + y) / 2.0;
+}
+
+int main() {
+    int Erro = 1;
+    return 0;
+}
