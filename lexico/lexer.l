@@ -72,7 +72,6 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 
 {DIGIT}+\.{DIGIT}+       { yylval.fval = atof(yytext); return FLOAT_LIT; }
 {DIGIT}+                 { yylval.ival = atoi(yytext); return INT_LIT; }
-                           
 {DIGIT}+[A-Za-z_][A-Za-z0-9_]* { lex_error("numero mal formado '%s'", yytext);
                                  yylval.ival = 0; return INT_LIT; }
 
@@ -88,6 +87,8 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 "||"                     { return OR; }
 
 [-+*/%=<>!(){};,:]       { return yytext[0]; }
+
+[\x80-\xFF]+             { lex_error("caractere nao-ASCII fora de string/comentario"); }
 
 .                        { if (isprint((unsigned char)yytext[0]))
                                lex_error("caractere invalido '%c'", yytext[0]);
