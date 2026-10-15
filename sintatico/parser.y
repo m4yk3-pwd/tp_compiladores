@@ -1,17 +1,16 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
-extern int yylex();
-extern int yyparse();
+int yylex(void);
 extern FILE *yyin;
-extern int lex_errors;
+extern int lex_errors, token_line, token_col;
+extern int last_lex_error_line, lex_unclosed_comment;
 
 void yyerror(const char *s);
 void erro_em(int l, int c, const char *msg);
 int syn_errors = 0;
-int syn_suprimido = 0;      /* 1 se o ULTIMO erro sintatico foi ocultado por ser cascata de erro lexico */
+int syn_suprimido = 0;
 %}
 
 %locations
@@ -23,25 +22,22 @@ int syn_suprimido = 0;      /* 1 se o ULTIMO erro sintatico foi ocultado por ser
     char *sval;
 }
 
-/* Tokens definidos no Flex */
-%token INT FLOAT VOID IF ELSE WHILE FOR RETURN MAIN
+%token INT FLOAT STRING VOID IF ELSE WHILE FOR RETURN MAIN
 %token SWITCH CASE DEFAULT BREAK
 %token <sval> FUNC_ID GLOBAL_ID LOCAL_ID STRING_LIT
 %token <ival> INT_LIT
 %token <fval> FLOAT_LIT
 %token EQ NEQ LE GE AND OR
 
-/* Precedência de operadores e associatividade */
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
-
-%right '='
 %left OR
 %left AND
 %left EQ NEQ
 %left '<' '>' LE GE
 %left '+' '-'
 %left '*' '/' '%'
+%right '!' UMINUS
 
 %start programa
 
@@ -66,15 +62,20 @@ var_global_decl:
     ;
 
 tipo:
-    INT | FLOAT | VOID
+    INT | FLOAT | STRING
+    ;
+
+tipo_retorno:
+    VOID | tipo
     ;
 
 funcao_decl:
-    tipo FUNC_ID '(' parametros ')' bloco
-    | tipo MAIN '(' ')' bloco
-    | tipo LOCAL_ID '(' parametros ')' bloco
+    tipo_retorno FUNC_ID '(' parametros ')' bloco
+    | INT MAIN '(' ')' bloco
+    | tipo_retorno LOCAL_ID
         { erro_em(@2.first_line, @2.first_column,
                   "nome de funcao invalido: use verbo + Termo (ex.: calcularSoma)"); }
+      '(' parametros ')' bloco
     ;
 
 parametros:
@@ -102,6 +103,7 @@ comandos:
 
 comando:
     var_local_decl
+    | declaracao_init ';'
     | atribuicao ';'
     | condicional
     | repeticao
@@ -110,17 +112,20 @@ comando:
     | retorno ';'
     | chamada_funcao ';'
     | bloco
-    | error ';'     /* recuperacao: descarta ate o proximo ';' e continua */
+    | error ';'
     ;
 
 var_local_decl:
     tipo LOCAL_ID ';'
     ;
 
+declaracao_init:
+    tipo LOCAL_ID '=' expressao
+    ;
+
 atribuicao:
     LOCAL_ID '=' expressao
     | GLOBAL_ID '=' expressao
-    | tipo LOCAL_ID '=' expressao
     ;
 
 condicional:
@@ -133,22 +138,9 @@ repeticao:
     | FOR '(' for_init ';' for_cond ';' for_passo ')' comando
     ;
 
-switch_stmt:
-    SWITCH '(' expressao ')' '{' cases '}'
-    ;
-
-cases:
-    cases case_stmt
-    | /* vazio */
-    ;
-
-case_stmt:
-    CASE expressao ':' comandos
-    | DEFAULT ':' comandos
-    ;
-
 for_init:
     atribuicao
+    | declaracao_init
     | /* vazio */
     ;
 
@@ -160,6 +152,26 @@ for_cond:
 for_passo:
     atribuicao
     | /* vazio */
+    ;
+
+switch_stmt:
+    SWITCH '(' expressao ')' '{' cases '}'
+    ;
+
+cases:
+    cases case_stmt
+    | /* vazio */
+    ;
+
+case_stmt:
+    CASE case_value ':' comandos
+    | DEFAULT ':' comandos
+    ;
+
+case_value:
+    INT_LIT
+    | '-' INT_LIT
+    | STRING_LIT
     ;
 
 retorno:
@@ -195,6 +207,8 @@ expressao:
     | expressao GE expressao
     | expressao AND expressao
     | expressao OR expressao
+    | '-' expressao %prec UMINUS
+    | '!' expressao
     | '(' expressao ')'
     | LOCAL_ID
     | GLOBAL_ID
@@ -213,9 +227,7 @@ void erro_em(int l, int c, const char *msg) {
 }
 
 void yyerror(const char *s) {
-    extern int token_line, token_col, last_lex_error_line;
-    /* erro na MESMA linha de um erro lexico: quase certamente e cascata (token descartado) */
-    if (token_line == last_lex_error_line) {
+    if (lex_unclosed_comment || token_line == last_lex_error_line) {
         syn_suprimido = 1;
         return;
     }
@@ -231,9 +243,8 @@ int main(int argc, char **argv) {
     }
 
     int rc = yyparse();
-    int restante = 0;   /* tokens que sobraram quando o parser abortou */
+    int restante = 0;
     if (rc != 0) {
-        /* o parser abortou (erro sem recuperacao): varre o resto so para achar erros lexicos */
         while (yylex() != 0) restante++;
     }
 
@@ -242,10 +253,12 @@ int main(int argc, char **argv) {
         printf("Analise sintatica concluida.\n");
         printf("Programa reconhecido com sucesso.\n");
     } else {
-        printf("\nForam encontrados %d erro(s) lexico(s) e %d erro(s) sintatico(s).\n", lex_errors, syn_errors);
+        printf("\nForam encontrados %d erro(s) lexico(s) e %d erro(s) sintatico(s).\n",
+               lex_errors, syn_errors);
         if (rc != 0 && syn_suprimido && restante > 0)
             printf("Analise sintatica interrompida por erro lexico: corrija os erros lexicos e execute de novo para verificar o resto do programa.\n");
     }
 
+    if (yyin && yyin != stdin) fclose(yyin);
     return (lex_errors || syn_errors) ? 1 : 0;
 }

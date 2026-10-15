@@ -2,17 +2,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "parser.tab.h"
 
-int lex_errors = 0;                 /* total de erros lexicos           */
-int last_lex_error_line = 0;        /* linha do ultimo erro lexico (evita erro sintatico em cascata) */
-int line = 1, col = 1;              /* posicao do PROXIMO caractere      */
-int token_line, token_col;          /* posicao de INICIO do token atual  */
-static int cmt_line, cmt_col;       /* onde o comentario de bloco abriu  */
+int lex_errors = 0;
+int last_lex_error_line = 0;
+int lex_unclosed_comment = 0;
+int line = 1, col = 1;
+int token_line, token_col;
+static int cmt_line, cmt_col;
 
-/* Roda antes de TODA acao: guarda onde o token comecou (para o Bison tambem: yylloc) e avanca a coluna */
 #define YY_USER_ACTION { token_line = line; token_col = col; \
                          yylloc.first_line = line;  yylloc.first_column = col; \
                          yylloc.last_line  = line;  yylloc.last_column  = col + yyleng; \
@@ -25,9 +24,6 @@ static void lex_error(const char *fmt, ...);
 %option noyywrap nounput noinput
 
 DIGIT     [0-9]
-
-/* ID aceita comecar com '_' (ex.: _teste), mas so e usado para REJEITAR: as regras
-   GLOBAL, LOCAL e FUNC abaixo e que aceitam identificadores validos. */
 ID        [A-Za-z_][A-Za-z0-9_]*
 GLOBAL    [A-Z][A-Z0-9_]*
 LOCAL     [a-z][a-z0-9_]*
@@ -37,21 +33,21 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 
 %%
 
-[ \t\r]+                 { /* ignora espacos */ }
+[ \t\r]+                 { }
 \n                       { line++; col = 1; }
 
-"//".*                   { /* comentario de linha */ }
+"//".*                   { }
 "/*"                     { cmt_line = token_line; cmt_col = token_col; BEGIN(COMMENT); }
 <COMMENT>"*/"            { BEGIN(INITIAL); }
 <COMMENT>\n              { line++; col = 1; }
-<COMMENT>[^*\n]+         { }
-<COMMENT>"*"             { }
-<COMMENT><<EOF>>         { lex_error_at(cmt_line, cmt_col,
-                               "comentario '/*' nao fechado");
+<COMMENT>[^*\n]+|"*"     { }
+<COMMENT><<EOF>>         { lex_error_at(cmt_line, cmt_col, "comentario '/*' nao fechado");
+                           lex_unclosed_comment = 1;
                            BEGIN(INITIAL); yyterminate(); }
 
 "int"                    { return INT; }
 "float"                  { return FLOAT; }
+"string"                 { return STRING; }
 "void"                   { return VOID; }
 "if"                     { return IF; }
 "else"                   { return ELSE; }
@@ -59,7 +55,6 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 "for"                    { return FOR; }
 "return"                 { return RETURN; }
 "main"                   { return MAIN; }
-
 "switch"                 { return SWITCH; }
 "case"                   { return CASE; }
 "default"                { return DEFAULT; }
@@ -70,15 +65,18 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
 {LOCAL}                  { yylval.sval = strdup(yytext); return LOCAL_ID; }
 {ID}                     { lex_error("identificador '%s' invalido: use MAIUSCULAS "
                                "(global), minusculas (local) ou verboTermo (funcao)",
-                               yytext); }
+                               yytext);
+                           yylval.sval = strdup(yytext); return LOCAL_ID; }
 
 {DIGIT}+\.{DIGIT}+       { yylval.fval = atof(yytext); return FLOAT_LIT; }
 {DIGIT}+                 { yylval.ival = atoi(yytext); return INT_LIT; }
-{DIGIT}+[A-Za-z_][A-Za-z0-9_]* {
-                           lex_error("numero mal formado '%s'", yytext); }
+                           
+{DIGIT}+[A-Za-z_][A-Za-z0-9_]* { lex_error("numero mal formado '%s'", yytext);
+                                 yylval.ival = 0; return INT_LIT; }
 
 \"([^"\\\n]|\\.)*\"      { yylval.sval = strdup(yytext); return STRING_LIT; }
-\"([^"\\\n]|\\.)*        { lex_error("string nao terminada"); }
+\"([^"\\\n]|\\.)*        { lex_error("string nao terminada");
+                           yylval.sval = strdup(yytext); return STRING_LIT; }
 
 "=="                     { return EQ; }
 "!="                     { return NEQ; }
@@ -96,8 +94,6 @@ FUNC      [a-z]+(ar|er|ir|or)[A-Z][A-Za-z0-9]*
                                          (unsigned char)yytext[0]); }
 
 %%
-
-#include <stdarg.h>
 
 static void lex_error_at(int l, int c, const char *msg) {
     fprintf(stderr, "Erro lexico (linha %d, coluna %d): %s\n", l, c, msg);

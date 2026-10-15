@@ -5,7 +5,7 @@
 
 int VARIAVEL_GLOBAL;
 float TAXA_ACUMULADA;
-void FLAG_CONTROLE;
+int FLAG_CONTROLE;
 
 int calcularSoma(int a, int b) {
     int resultado;
@@ -47,7 +47,7 @@ int processarLacos() {
     int acumulador;
     acumulador = 0;
 
-    for (int x = 0; i < 10; i = i + 1) {
+    for (a = 0; i < 10; i = i + 1) {
         acumulador = acumulador + i;
         if (acumulador > 50) {
             break;
@@ -67,7 +67,7 @@ void analisarOpcao(int escolha) {
     int log;
     log = 0;
 
-    switch (escolha) {
+    switch (a) {
         case 1:
             log = log + 10;
             break;
@@ -129,6 +129,4 @@ int main() {
     if ((a >= b && a < VARIAVEL_GLOBAL) || (b != 0)) {
         a = 0;
     }
-
-    return 0;
 }
