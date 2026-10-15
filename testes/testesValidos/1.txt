@@ -1,0 +1,44 @@
+// valido_1.txt - globais, funcoes simples, while e if/else
+int CONTADOR;
+float TAXA_JUROS;
+string MENSAGEM;
+
+int somarDois(int a, int b) {
+    return a + b;
+}
+
+float calcularMedia(float x, float y) {
+    float soma = x + y;
+    return soma / 2.0;
+}
+
+void imprimirTexto(string texto) {
+    return;
+}
+
+int main() {
+    int total = 0;
+    int i;
+    float media;
+    string nome = "Ana";
+
+    CONTADOR = 10;
+    TAXA_JUROS = 1.5;
+    MENSAGEM = "ola mundo";
+
+    total = somarDois(CONTADOR, 5);
+    media = calcularMedia(3.5, 4.5);
+
+    i = 0;
+    while (i < 10) {
+        total = total + i * 2 - 1;
+        i = i + 1;
+    }
+
+    if (total > 50) {
+        imprimirTexto("grande");
+    } else {
+        imprimirTexto("pequeno");
+    }
+    return 0;
+}

@@ -1,0 +1,56 @@
+/* valido_3.txt - chamadas aninhadas, strings e blocos
+   comentario de varias linhas */
+string SAUDACAO;
+float PI;
+int CONTA_2;
+int MAX_ITENS_10;
+
+void iniciarSistema() { }
+
+void registrarLog(string msg, int nivel) {
+    if (nivel > 0 && msg != "") {
+        CONTA_2 = CONTA_2 + 1;
+    }
+}
+
+int somarTres(int a, int b, int c) { return a + b + c; }
+
+int maximizarDois(int a, int b) {
+    if (a > b) { return a; }
+    return b;
+}
+
+float calcularArea(float raio) {
+    return PI * raio * raio;
+}
+
+int calcularPotencia(int base, int exp) {
+    if (exp == 0) {
+        return 1;
+    }
+    return base * calcularPotencia(base, exp - 1);
+}
+
+int main() {
+    string texto = "Linha com \"aspas\" e \\ barra\n";
+    int r;
+    float area;
+
+    iniciarSistema();
+    SAUDACAO = "Ola";
+    PI = 3.14159;
+    MAX_ITENS_10 = 100;
+
+    area = calcularArea(2.0);
+    r = somarTres(maximizarDois(1, 2), calcularPotencia(2, 10), somarTres(1, 1, 1));
+    registrarLog("resultado calculado", r);
+    registrarLog(texto, (r + 1) * (r - 1) / 2);
+
+    {
+        {
+            int fundo = 0;
+            fundo = fundo + 1;
+        }
+    }
+    return 0; // fim
+}

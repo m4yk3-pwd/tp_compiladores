@@ -1,0 +1,77 @@
+/* valido_2.txt - controle de fluxo aninhado */
+int LIMITE;
+int ACUMULADO;
+
+int verificarPar(int n) {
+    if (n % 2 == 0) return 1;
+    return 0;
+}
+
+int calcularFatorial(int n) {
+    int resultado = 1;
+    for (int i = 1; i <= n; i = i + 1) {
+        resultado = resultado * i;
+    }
+    return resultado;
+}
+
+int classificarNota(int nota) {
+    if (nota >= 90) {
+        return 4;
+    } else if (nota >= 70) {
+        return 3;
+    } else if (nota >= 50) {
+        return 2;
+    } else
+        return 1;
+}
+
+void processarOpcao(int op) {
+    switch (op) {
+        case 1:
+            ACUMULADO = ACUMULADO + 1;
+            break;
+        case 2:
+        case -3:
+            ACUMULADO = ACUMULADO - 1;
+            break;
+        case 4:
+            switch (op * 2) {
+                case 8: break;
+                default: ACUMULADO = 0;
+            }
+            break;
+        default:
+            ACUMULADO = -1;
+    }
+}
+
+int main() {
+    int a = 5;
+    int b;
+    int k;
+
+    LIMITE = 20;
+    ACUMULADO = 0;
+
+    // else pendente: casa com o if mais interno
+    if (a > 0)
+        if (a < 10)
+            b = 1;
+        else
+            b = 2;
+
+    for (;;) {
+        break;
+    }
+
+    for (k = 0; k < LIMITE && !verificarPar(k); k = k + 1) {
+        { int tmp = k * 2; ACUMULADO = ACUMULADO + tmp; }
+    }
+
+    while (a != 0 || b == 1) { a = a - 1; b = 0; }
+
+    b = classificarNota(75) + calcularFatorial(4) * -1;
+    processarOpcao(-(a + 1));
+    return 0;
+}
