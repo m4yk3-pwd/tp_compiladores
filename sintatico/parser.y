@@ -256,7 +256,7 @@ int main(int argc, char **argv) {
         printf("\nForam encontrados %d erro(s) lexico(s) e %d erro(s) sintatico(s).\n",
                lex_errors, syn_errors);
         if (rc != 0 && syn_suprimido && restante > 0)
-            printf("Analise sintatica interrompida por erro lexico: corrija os erros lexicos e execute de novo para verificar o resto do programa.\n");
+            printf("Analise sintatica interrompida por erro lexico: corrija os erros lexicos e execute de novo para verificar o resto do programa (restaram: %d tokens)\n", restante);
     }
 
     if (yyin && yyin != stdin) fclose(yyin);

@@ -9,3 +9,9 @@ int main() {
     
     return soma;
 }
+
+int somarNumeros() {
+    somarNumeros();
+    return 1 + 1;
+
+}
